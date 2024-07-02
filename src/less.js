@@ -3,16 +3,16 @@
 /**
  * Module dependencies.
  */
-
-const util = require('util');
-const slice = require('slice-ansi');
+import util from 'node:util';
+import slice from 'slice-ansi';
+import help from './help.js';
 
 let chalk;
 
 const utili = {
 
   padRows(str, n) {
-    for (let i = 0; i < n; ++i) {
+    for (let i = 0; i < n; i++) {
       str = `\n${str}`;
     }
     return str;
@@ -37,7 +37,7 @@ const utili = {
 const less = {
 
   init(instance, vorpal, args, callback) {
-    callback = callback || function () {};
+    callback = callback || (() => {});
     this.instance = instance;
     this.vorpal = vorpal;
     this.hasQuit = false;
@@ -51,32 +51,30 @@ const less = {
     this.cache = '';
     this.numbers = '';
     this.prompted = false;
-    this.help = require('./help')(vorpal);
+    this.help = help(vorpal);
     this.onlyHelp = (args.options.help);
     this.helpMode = (args.options.help);
     this.quitIfOneScreen = (args.options.quitifonescreen);
-    const self = this;
-    this.keypressFn = function (e) {
-      self.onKeypress(e);
+    this.keypressFn = (e) => {
+      this.onKeypress(e);
     };
     this.vorpal.on('keypress', this.keypressFn);
     return this;
   },
 
   exec(args) {
-    const self = this;
     const stdin = args.stdin || '';
     this.iteration += 1;
     this.stdin += `${stdin}\n`;
-    function roll() {
-      const content = self.prepare();
-      if (self.hasQuit) {
+    const roll = () => {
+      const content = this.prepare();
+      if (this.hasQuit) {
         return;
       }
-      if (!self.prompted) {
-        self.prompt();
+      if (!this.prompted) {
+        this.prompt();
       }
-      self.render(content);
+      this.render(content);
     }
     // If we are getting tons of calls to
     // exec due to a continual feed of data,
@@ -86,8 +84,8 @@ const less = {
     // it a million times.
     if (this.iteration > 1) {
       const lastIter = this.iteration;
-      setTimeout(function () {
-        if (self.iteration === lastIter) {
+      setTimeout(() => {
+        if (this.iteration === lastIter) {
           roll();
         }
       }, 50);
@@ -97,25 +95,24 @@ const less = {
   },
 
   prepare() {
-    const self = this;
     let stdins = (this.helpMode) ? this.help : String(this.stdin);
     const cursorY = (this.helpMode) ? this.helpCursorY : this.cursorY;
     const cursorX = (this.helpMode) ? this.helpCursorX : this.cursorX;
     const lines = stdins.split('\n').length;
     const height = process.stdout.rows - 1;
     const diff = height - lines;
-    if (diff > 0 && !this.quitIfOneScreen) {
+    if ((diff > 0) && (!this.quitIfOneScreen)) {
       stdins = utili.padRows(stdins, diff);
     }
-    stdins = stdins.split('\n').slice(cursorY, cursorY + height).map(function (str) {
+    stdins = stdins.split('\n').slice(cursorY, cursorY + height).map((str) => {
       str = slice(str, cursorX, cursorX + process.stdout.columns - 1);
       return str;
     }).join('\n');
-    if (this.quitIfOneScreen && diff > 0) {
+    if ((this.quitIfOneScreen) && (diff > 0)) {
       // If we're logging straight, we want to remove the last \n,
       // as console.log takes care of that for us.
       stdins = (stdins[stdins.length - 1] === '\n') ? stdins.slice(0, stdins.length - 1) : stdins;
-      self.vorpal.log(stdins);
+      this.vorpal.log(stdins);
       this.quit({
         redraw: false
       });
@@ -212,7 +209,7 @@ const less = {
     let delimiter;
     if (flags.version) {
       delimiter = chalk.inverse('vorpal-less 0.0.1 (press RETURN) ');
-    } else if (cursorY >= bottom && this.helpMode) {
+    } else if ((cursorY >= bottom) && (this.helpMode)) {
       delimiter = chalk.inverse('HELP -- END -- Press g to see it again, or q when done ');
     } else if (cursorY >= bottom) {
       delimiter = chalk.inverse('END ');
@@ -232,7 +229,7 @@ const less = {
     if (!this.hasQuit) {
       this.vorpal.ui.delimiter(delimiter);
       this.render(content);
-      if (cursorY < bottom && !this.helpMode) {
+      if ((cursorY < bottom) && (!this.helpMode)) {
         this.vorpal.ui.input(this.cache);
       } else {
         this.vorpal.ui.input('');
@@ -241,25 +238,24 @@ const less = {
   },
 
   quit(options) {
-    const self = this;
-    self.hasQuit = true;
+    this.hasQuit = true;
     options = options || {
       redraw: true
     };
 
-    function end() {
-      self.vorpal.removeListener('keypress', self.keypressFn);
+    const end = () => {
+      this.vorpal.removeListener('keypress', this.keypressFn);
       if (options.redraw) {
-        self.vorpal.ui.submit('');
-        self.vorpal.ui.redraw.clear();
-        self.vorpal.ui.redraw.done();
+        this.vorpal.ui.submit('');
+        this.vorpal.ui.redraw.clear();
+        this.vorpal.ui.redraw.done();
       }
-      self.callback();
+      this.callback();
     }
 
     // Wait for the prompt to render.
-    function wait() {
-      if (!self.vorpal.ui._activePrompt) {
+    const wait = () => {
+      if (!this.vorpal.ui._activePrompt) {
         setTimeout(wait, 10);
       } else {
         end();
@@ -271,33 +267,31 @@ const less = {
 
   prompt() {
     this.prompted = true;
-    const self = this;
 
     // For now, ensure we aren't stuck
     // on Vorpal's last prompt.
-    if (self.vorpal.ui._activePrompt) {
-      delete self.vorpal.ui._activePrompt;
+    if (this.vorpal.ui._activePrompt) {
+      delete this.vorpal.ui._activePrompt;
     }
 
     this.instance.prompt({
       type: 'input',
       name: 'continue',
       message: ':',
-      validate() {
-        if (self.hasQuit === true) {
+      validate: () => {
+        if (this.hasQuit === true) {
           return true;
         }
         // By validating false, and sending
         // a keypress event, we can bypass the
         // enter key's default inquirer actions
         // and treat it like it's just another key.
-        self.onKeypress({
-          e: {key: {name: 'enter'}}
+        this.onKeypress({
+          e: { key: { name: 'enter' } }
         });
         return false;
       }
-    }, function () {
-    });
+    }, () => {});
   }
 };
 
@@ -306,7 +300,7 @@ const less = {
  * object and options.
  */
 
-module.exports = function (vorpal) {
+export default function (vorpal) {
   if (vorpal === undefined) {
     return less;
   }
@@ -315,9 +309,9 @@ module.exports = function (vorpal) {
   chalk = vorpal.chalk;
   function route(args, cb) {
     cb = cb || function () {};
-    if (this._less && this._less.hasQuit === true) {
+    if ((this._less) && (this._less.hasQuit === true)) {
       args.stdin = (Object.prototype.toString.call(args.stdin) === '[object Array]') ? args.stdin[0] : args.stdin;
-      if (this._less.quitIfOneScreen && args.stdin && args.stdin !== '') {
+      if ((this._less.quitIfOneScreen) && (args.stdin) && (args.stdin !== '')) {
         vorpal.log(args.stdin);
       }
       cb();

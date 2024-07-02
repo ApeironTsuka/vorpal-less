@@ -1,38 +1,38 @@
 'use strict';
 
-require('assert');
+import assert from 'assert';
+import should from 'should';
+import less from '../src/less.js';
+import Vorpal from '@ApeironTsuka/vorpal';
 
-var should = require('should');
-var less = require('./../dist/less');
-var vorpal = require('vorpal')();
+const vorpal = new Vorpal();
 
-vorpal.command('blabber').action(function (args, cb) {
-  var blabber = '';
-  for (var i = 0; i < 300; ++i) {
-    for (var j = 0; j < 80; ++j) {
+vorpal.command('blabber').action(async (args) => {
+  let blabber = '';
+  for (let i = 0; i < 300; i++) {
+    for (let j = 0; j < 80; j++) {
       blabber += Math.floor(Math.random() * 100);
     }
     blabber += '\n';
   }
   this.log(blabber);
-  cb();
 });
 
-describe('vorpal-less', function () {
-  it('should exist and be a function', function () {
+describe('vorpal-less', () => {
+  it('should exist and be a function', () => {
     should.exist(less);
     less.should.be.type('function');
   });
 
-  it('should import into Vorpal', function () {
-    (function () {
+  it('should import into Vorpal', () => {
+    (() => {
       vorpal.use(less);
     }).should.not.throw();
   });
 
-  it('should exist as a command in Vorpal', function () {
-    var exists = false;
-    for (var i = 0; i < vorpal.commands.length; ++i) {
+  it('should exist as a command in Vorpal', () => {
+    let exists = false;
+    for (let i = 0, l = vorpal.commands.length; i < l; i++) {
       if (vorpal.commands[i]._name === 'less') {
         exists = true;
       }

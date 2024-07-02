@@ -1,9 +1,9 @@
 'use strict';
 
-const vorpal = require('vorpal')();
-const chalk = require('chalk');
-const hn = require('vorpal-hacker-news');
-const less = require('./../dist/less');
+import Vorpal from '@ApeironTsuka/vorpal';
+import chalk from 'chalk';
+import hn from '@ApeironTsuka/vorpal-hacker-news';
+import less from '../src/less.js';
 
 vorpal
   .delimiter(`${chalk.grey(`type "${chalk.blue(`hacker-news -l 50 | less`)}":`)}`)

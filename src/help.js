@@ -1,5 +1,5 @@
-module.exports = function (vorpal) {
-  const chalk = vorpal.chalk;
+export default function (vorpal) {
+  const { chalk } = vorpal;
   const b = chalk.blue;
   const y = chalk.yellow;
   const r = chalk.red;

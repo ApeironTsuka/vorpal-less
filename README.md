@@ -1,25 +1,26 @@
 # Vorpal - Less
 
-[![Build Status](https://travis-ci.org/vorpaljs/vorpal-less.svg)](https://travis-ci.org/vorpaljs/vorpal-less)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 
-A 100% Javascript (ES2015) implementation of the [less](https://en.wikipedia.org/wiki/Less_%28Unix%29) command.
+A 100% Javascript (ES2017) implementation of the [less](https://en.wikipedia.org/wiki/Less_%28Unix%29) command.
 
-A [Vorpal.js](https://github.com/dthree/vorpal) extension, `vorpal-less` lets you pipe vorpal commands and content through less.
+A [Vorpal.js](https://github.com/ApeironTsuka/vorpal) extension, `vorpal-less` lets you pipe vorpal commands and content through less.
 
 ### Installation
 
 ```bash
-npm install vorpal-less
-npm install vorpal
+npm install @ApeironTsuka/vorpal-less
+npm install @ApeironTsuka/vorpal
 ```
 
 ### Getting Started
 
 ```js
-const vorpal = require('vorpal')();
-const hn = require('vorpal-hacker-news');
-const less = require('vorpal-less');
+import Vorpal from '@ApeironTsuka/vorpal';
+import hn from '@ApeironTsuka/vorpal-hacker-news';
+import less from '@ApeironTsuka/vorpal-less';
+
+const vorpal = new Vorpal();
 
 vorpal
   .delimiter('node~$')
@@ -39,8 +40,8 @@ node~$ hacker-news | less
 
 ### Examples
 
-- [Hackers News](https://github.com/vorpaljs/vorpal-less/blob/master/examples/hacker-news.js)
-- [Rock Paper Scissors](https://github.com/vorpaljs/vorpal-less/blob/master/examples/rock-paper-scissors.js)
+- [Hackers News](https://github.com/ApeironTsuka/vorpal-less/blob/master/examples/hacker-news.js)
+- [Rock Paper Scissors](https://github.com/ApeironTsuka/vorpal-less/blob/master/examples/rock-paper-scissors.js)
 
 ### Implementation
 
